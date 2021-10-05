@@ -1,0 +1,60 @@
+{
+  "plans": [
+    {
+      "planID": 1,
+      "planName": "Register 1",
+      "rows": 4,
+      "columns": 4,
+      "items": [
+        {
+          "itemSKU": "123",
+          "itemName": "Wintergreen",
+          "itemCount": 10,
+          "facings": 5
+        },
+        {
+          "itemSKU": "124",
+          "itemName": "Peppermint",
+          "itemCount": 2,
+          "facings": 1
+        },
+        {
+          "itemSKU": "125",
+          "itemName": "Cinnamon",
+          "itemCount": 6,
+          "facings": 1
+        },
+        {
+          "itemSKU": "126",
+          "itemName": "Tident",
+          "itemCount": 4,
+          "facings": 1
+        },
+        {
+          "itemSKU": "127",
+          "itemName": "Extra Smooth",
+          "itemCount": 9,
+          "facings": 1
+        },
+        {
+          "itemSKU": "128",
+          "itemName": "Polar Ice",
+          "itemCount": 1,
+          "facings": 1
+        },
+        {
+          "itemSKU": "129",
+          "itemName": "Raspberry",
+          "itemCount": 0,
+          "facings": 1
+        },
+        {
+          "itemSKU": "120",
+          "itemName": "Blueberry",
+          "itemCount": 14,
+          "facings": 1
+        }
+      ]
+    }
+  ]
+}
