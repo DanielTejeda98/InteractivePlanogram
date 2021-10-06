@@ -1,0 +1,27 @@
+{
+  "name": "interactiveplanogramapi",
+  "version": "0.0.1",
+  "description": "API to support interactive planogram client. Middleman to interact with database.",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielTejeda98/InteractivePlanogram.git"
+  },
+  "author": "Daniel D. Tejeda",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanielTejeda98/InteractivePlanogram/issues"
+  },
+  "homepage": "https://github.com/DanielTejeda98/InteractivePlanogram#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongoose": "^6.0.9"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.13"
+  }
+}
