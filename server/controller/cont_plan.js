@@ -22,10 +22,11 @@ exports.newPlan = (req, res, next) =>
     }
   )
   plan.save()
-  .then(res =>
+  .then(result =>
     {
       //Resource created
       console.log("New plan created...")
+      res.json(result);
       res.status(201);
     })
   .catch(err =>
@@ -41,9 +42,46 @@ exports.getPlanList = (req, res, next) =>
   .then(plans =>
     {
       res.json(plans)
+      res.status(200);
     })
   .catch(err =>
     {
       console.log("ERROR: " + err);
     })
+}
+
+exports.getPlan = (req, res, next) =>
+{
+  const id = req.params.id;
+
+  Plan.findById(id, (err, plan) =>
+    {
+      if(err)
+      {
+        console.log(err);
+      }
+      else
+      {
+        res.json(plan);
+        res.status(200);
+      }
+    })
+}
+
+exports.deletePlan = (req, res, next) =>
+{
+  const id = req.params.id;
+
+  Plan.findByIdAndRemove(id, (err, plan) =>
+  {
+    if (err)
+    {
+      console.log(err);
+    }
+    else
+    {
+      res.json(plan);
+      res.status(204);
+    }
+  })
 }

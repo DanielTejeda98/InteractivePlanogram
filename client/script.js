@@ -15,7 +15,7 @@ var planListData = [];
 //Welcome message
 const renderWelcome = () =>
 {
-  return '<h1>Welcome to Interactive Plannogram JS</h1>' +
+  return '<h1>Welcome to Interactive Planogram JS</h1>' +
   '<p>Thank you for using our software!</p>'
 }
 
@@ -71,57 +71,120 @@ const renderItemCreation = () =>
 }
 
 //Render Plan
-const renderPlan = () =>
+const renderPlan = (data) =>
 {
-  var planElements = [];
-  planElements.push(`<h2>Plan Name: ${jsonData.plans[0].planName}</h2>`)
-  planElements.push('<div style="display: block; width: 600px; height: auto; border: 1px solid;" class="planWrapper">');
-  //Create divs for each row
-  let itemIndex = 0;
-  for(let i = 0; i < rows; i++)
+  let planElements = [];
+  const itemsList = data.itemList.items;
+  const column = data.shelfFacings;
+  const rows = data.shelfs;
+  if(itemsList.length != 0)
   {
-    planElements.push('<div style="width: 595px; height: 100px; border: 1px solid;" class="planRow">')
-    //Create columns inside the rows
-    let c = 0;
-    while(c < column)
-    { 
-      //Get item information...
-      //
-      if(itemIndex < jsonData.plans[0].items.length)
-      {
-        if(jsonData.plans[0].items[itemIndex].facings > (column - c))
+    planElements.push(`<h2>Plan Name: ${data.planName}</h2>`)
+    planElements.push('<div style="display: block; width: 600px; height: auto; border: 1px solid;" class="planWrapper">');
+    //Create divs for each row
+    let itemIndex = 0;
+    for(let i = 0; i < rows; i++)
+    {
+      planElements.push('<div style="width: 595px; height: 100px; border: 1px solid;" class="planRow">')
+      //Create columns inside the rows
+      let c = 0;
+      while(c < column)
+      { 
+        //Get item information...
+        //
+        if(itemIndex < itemsList.length)
         {
-          break;
+          if(itemsList[itemIndex].facings > (column - c))
+          {
+            break;
+          }
+          else
+          {
+            var itemName = itemsList[itemIndex].itemName.toString();
+            var itemWidth = ((595 / column) - 5) * itemsList[itemIndex].facings;
+            planElements.push(`<div style="float: left; width: ${itemWidth}px; height: 95px; border: 1px solid;" class="planColumn">`)
+            planElements.push(`<button id="itemInformation" value="${itemsList[itemIndex].itemSKU}" onclick="getItemInfo(this.value)" style="font-size: 0.8rem;">${itemName}</button>`)
+            //Close column
+            planElements.push('</div>')
+            c += itemsList[itemIndex].facings;
+            itemIndex++;
+          }
         }
         else
         {
-          var itemName = jsonData.plans[0].items[itemIndex].itemName.toString();
-          var itemWidth = ((595 / column) - 5) * jsonData.plans[0].items[itemIndex].facings;
           planElements.push(`<div style="float: left; width: ${itemWidth}px; height: 95px; border: 1px solid;" class="planColumn">`)
-          planElements.push(`<button id="itemInformation" value="${jsonData.plans[0].items[itemIndex].itemSKU}" onclick="getItemInfo(this.value)" style="font-size: 0.8rem;">${itemName}</button>`)
+          planElements.push(`<button id="itemInformation" onclick="itemInfo(event)" style="font-size: 0.8rem;">NA</button>`)
           //Close column
           planElements.push('</div>')
-          c += jsonData.plans[0].items[itemIndex].facings;
-          itemIndex++;
+          c++;
         }
       }
-      else
-      {
+      //Close row
+      planElements.push('</div>')
+    }
+    
+    //Close wrapper div
+    planElements.push('</div>')
+  }
+  //No items in plan
+  else
+  {
+    planElements.push(`<h2>Plan Name: ${data.planName}</h2>`)
+    planElements.push('<div style="display: block; width: 400x; height: auto; border: 1px solid;" class="planWrapper">');
+    //Create divs for each row
+    for(let i = 0; i < rows; i++)
+    {
+      planElements.push('<div style="width: 395px; height: 100px; border: 1px solid;" class="planRow">')
+      //Create columns inside the rows
+      let c = 0;
+      while(c < column)
+      { 
+        var itemName = "NA";
+        var itemWidth = ((395 / column) - 5);
         planElements.push(`<div style="float: left; width: ${itemWidth}px; height: 95px; border: 1px solid;" class="planColumn">`)
-        planElements.push(`<button id="itemInformation" onclick="itemInfo(event)" style="font-size: 0.8rem;">NA</button>`)
+        planElements.push(`<button id="itemInformation" value=""" style="font-size: 0.8rem;">${itemName}</button>`)
         //Close column
         planElements.push('</div>')
         c++;
       }
+      //Close row
+      planElements.push('</div>')
     }
-    //Close row
+    
+    //Close wrapper div
     planElements.push('</div>')
   }
-  
-  //Close wrapper div
-  planElements.push('</div>')
 
-  return planElements.join(' ');
+  if(document.querySelector("#overlay") == null)
+  {
+    //Create Overlay
+    const newDiv = document.createElement("div");
+    newDiv.setAttribute("id", "overlay");
+    
+    const containerDiv = document.createElement("div");
+    containerDiv.setAttribute("id", "overlayContainer");
+    newDiv.appendChild(containerDiv);
+
+    const btnExit = document.createElement("button");
+    btnExit.innerText = "X";
+    btnExit.addEventListener("click", () =>
+    {
+      document.getElementById("overlay").style.display = "none";
+      document.getElementById("overlay").remove();
+    })
+    containerDiv.appendChild(btnExit);
+
+    const dataDiv = document.createElement("div");
+    dataDiv.innerHTML = planElements.join(" ");
+    containerDiv.appendChild(dataDiv);
+
+
+    body.appendChild(newDiv);
+
+    
+  }
+  document.getElementById("overlay").style.display = "block";
+
 }
 
 //Render Lists of Data from Database
@@ -138,17 +201,18 @@ const renderActivePlansList = () =>
   '<th>Shelves Facings</th>' +
   '<th>Total Items</th>' +
   '<th>Edit</th>' +
+  '<th>Delete</th>' +
   '</tr>')
   for(let i = 0; i < planListData.length; i++)
   {
-    console.log("pushed")
     activePlan.push(
       '<tr>' +
       '<td>' + planListData[i].planName + '</td>' +
       '<td>' + planListData[i].shelfs + '</td>' +
       '<td>' + planListData[i].shelfFacings+ '</td>' +
       '<td>' + planListData[i].itemList.totalItems + '</td>' +
-      '<td>' + '<button value="' + planListData[i]._id + '">Edit</button>' + '</td>' +
+      '<td>' + '<button value="' + planListData[i]._id + '" class="btn_plan">Edit</button>' + '</td>' +
+      '<td>' + '<button value="' + planListData[i]._id + '" class="btn_delete">Delete</button>' + '</td>' +
       '</tr>'  
     )
   }
@@ -166,7 +230,7 @@ htmlElements.push(renderAppOptions());
 //Function to render elements
 const renderPage = () =>
 {
-    body.innerHTML = htmlElements.join(' ');
+  body.innerHTML = htmlElements.join(' ');
   //Event Listeners
   //Check if element exists
   //Go Back
@@ -181,7 +245,7 @@ const renderPage = () =>
       htmlElements.push(renderWelcome());
       htmlElements.push(renderAppOptions());
 
-      renderPage();
+      receiveJSONData('http://127.0.0.1:8000/plan/planlist', 'GET');
     })
   }
   //Create Plan
@@ -280,6 +344,58 @@ const renderPage = () =>
     })
   }
 
+  //GET SINGLE PLAN
+  document.querySelectorAll('.btn_plan').forEach(btn =>
+    {
+      btn.addEventListener('click', e =>
+      {
+        console.log(e.target.value);
+        fetch('http://127.0.0.1:8000/plan/getPlan/' + e.target.value,
+        {
+          method: 'GET',
+          headers:
+          {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res =>
+          {
+            return res.json()
+          })
+        .then(data =>
+          {
+            console.log(data);
+            renderPlan(data);
+          })
+        .catch(err => console.log('ERROR: ' + err));
+      })
+    })
+
+  //DELETE ONE PLAN
+  document.querySelectorAll('.btn_delete').forEach(btn =>
+    {
+      btn.addEventListener('click', e =>
+      {
+        fetch('http://127.0.0.1:8000/plan/deletePlan/' + e.target.value,
+        {
+          method: 'DELETE'
+        })
+        .then(res =>
+          {
+            if(res.ok) 
+            {
+              //Reset the render list
+              htmlElements.length = 0;
+              //Recreate render list
+              htmlElements.push(renderWelcome());
+              htmlElements.push(renderAppOptions());
+              receiveJSONData('http://127.0.0.1:8000/plan/planlist', 'GET');
+            }
+          })
+        .catch(err => console.log('ERROR: ' + err));
+      })
+    })
+
 }
 
 //Data functions
@@ -306,6 +422,7 @@ const getItemInfo = (itemSKU) =>
 //Receive data from dataHandler
 const receiveJSONData = (url, method) =>
 {
+  console.log('RECEIVE JSON DATA CALLED')
   fetch(url,
     {
       method: method,
@@ -324,7 +441,7 @@ const receiveJSONData = (url, method) =>
         htmlElements.push(renderActivePlansList());
         renderPage();
       })
-    .catch(err => alert(err))
+    .catch(err => console.log('ERROR: ' + err))
 }
 //Receive data from server
 receiveJSONData('http://127.0.0.1:8000/plan/planlist', 'GET')
